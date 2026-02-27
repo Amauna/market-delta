@@ -35,6 +35,21 @@
                 </div>
                 <p id="message" class="mt-2 text-sm"></p>
             </div>
+            <div class="bg-slate-800 border border-slate-700 p-6 rounded-xl mb-12">
+    <h3 class="text-lg font-bold mb-2">Bulk Track Products</h3>
+    <p class="text-xs text-slate-400 mb-4">Paste multiple URLs (one per line)</p>
+    
+        <div class="flex flex-col gap-4">
+            <textarea id="bulk-url-input" rows="4" 
+                    placeholder="https://site.com/product1&#10;https://site.com/product2"
+                    class="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500 text-white font-mono text-sm"></textarea>
+            
+            <button onclick="bulkAdd()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                Start Bulk Ingestion
+            </button>
+        </div>
+        <p id="bulk-message" class="mt-2 text-sm"></p>
+    </div>
 
             <!-- Dashboard Grid -->
              <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,6 +130,34 @@
                 }catch (error) {
                     console.error('Error loading dashboard:', error);
                     document.getElementById('product-grid').innerHTML = '<p class="text-red-500"> API Offline. Please start the FastAPI server.</p>';
+                }
+            }
+
+            async function bulkAdd(){
+                const input = document.getElementById('bulk-url-input');
+                const msg = document.getElementById('bulk-message');
+                const urls = input.value.split('\n').filter(u => u.trim() !== "");
+
+                if (urls.length === 0) return;
+
+                msg.innerText = `Processing ${urls.length} products... This may take minute.`;
+                msg.className = "mt-2 text-sm text-blue-400"
+
+                try{
+                    const response = await fetch('http://127.0.0.1:8000/bulk-add-product',{
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json'},
+                        body:JSON.stringify({ urls: urls})
+                    });
+
+                    const result = await response.json();
+                    msg.innerText = result.message;
+                    msg.className = "mt-2 text-sm txt-green-400";
+
+                    input.value = '';
+                    loadDashboard(); //Refresh UI
+                } catch (error) {
+                    msg.innerText = "API Error. check console.";
                 }
             }
 

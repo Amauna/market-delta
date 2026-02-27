@@ -100,6 +100,43 @@ def fetch_product_stats():
     finally:
         conn.close()
 
+class BulkProductRequest(BaseModel):
+    urls: List[str]
+    site_key: str = "books_to_scrape"
+
+@app.post("/bulk-add-product")
+async def bulk_add_product(request: BulkProductRequest):
+    print(f"Starting bulk ingestion for {len(request.urls)} products...")
+
+    results = {"success": [], "failed": []}
+
+    for url in request.urls:
+        url = url.strip() # Clean any whitespace
+        if not url: continue
+
+        try:
+            #We reuse the Nuclear "Option Subprocess" for safety
+            process = subprocess.Popen(
+                [sys.executable, "scraper.py", url],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            stdout, stderr = process.communicate()
+
+            if "SUCCESS" in stdout:
+                results["success"].append(url)
+            else:
+                results["failed"].append(url)
+        except Exception as e:
+            results ["failed"].append(url)
+
+    return {
+        "message": f"Bulk processing complete {len(results['success'])} added, {len(results['failed'])} failed.",
+        "results": results
+    }
+
+
 @app.get("/")
 def root():
     return {"status": "online"}
