@@ -1,3 +1,6 @@
+<img width="1869" height="921" alt="image" src="https://github.com/user-attachments/assets/809f3108-847d-4b5b-bc9f-e1ac47ac5f6d" />
+
+
 ```
 # Market Delta v1.1: Enterprise Competitor Intelligence Engine
 
