@@ -1,7 +1,6 @@
 <img width="1869" height="921" alt="image" src="https://github.com/user-attachments/assets/809f3108-847d-4b5b-bc9f-e1ac47ac5f6d" />
 
 
-```
 # Market Delta v1.1: Enterprise Competitor Intelligence Engine
 
 A high-performance, full-stack data pipeline engineered to monitor e-commerce price fluctuations and stock levels. Market Delta transforms raw web data into actionable business intelligence via an automated "Collect -> Transform -> Store -> Serve" lifecycle.
@@ -22,7 +21,7 @@ market-delta/
 ├── seed_data.py          # Time-Series Data Generator (For Testing)
 ├── requirements.txt      # Dependency Manifest
 └── README.md             # Architecture Documentation
-```
+
 
 ## 🚀 The Mission
 For emerging e-commerce brands, manual price tracking is a growth bottleneck. Market Delta provides a scalable, automated alternative that tracks historical **"Price Deltas,"** allowing businesses to respond to competitor moves instantly.
@@ -71,6 +70,4 @@ Developed a robust cleaning pipeline to handle messy e-commerce strings, ensurin
 - [ ] **Cloud Migration:** AWS deployment for 24/7 monitoring.
 - [ ] **Webhook Alerts:** Discord/Slack notifications for price drops.
 - [ ] **Proxy Integration:** Bypassing anti-bot measures on enterprise retail sites.
-```
 
----
