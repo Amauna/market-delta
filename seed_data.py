@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import random
 from datetime import datetime, timedelta
 
 # Find our database
@@ -10,36 +11,40 @@ def seed_history():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # 1. Get the first product ID
-    cursor.execute("SELECT id, title FROM products LIMIT 1")
-    product = cursor.fetchone()
+    # 1. Get the ALL products
+    cursor.execute("SELECT id, title FROM products")
+    products = cursor.fetchall()
 
-    if not product:
+
+    if not products:
         print("No products found! Add a book via the dashboard first.")
         return
 
-    p_id, title = product
-    print(f"Seeding history for: {title} (ID: {p_id})")
+    for p_id, title in products:
+        print(f"Generating data for: {title}...")
 
-    # 2. Create fake historical prices
-    # We'll create prices for the last 5 days
-    fake_data = [
-        (p_id, 15.50, 19, (datetime.now() - timedelta(days=5)).isoformat()),
-        (p_id, 25.00, 19, (datetime.now() - timedelta(days=4)).isoformat()),
-        (p_id, 10.00, 19, (datetime.now() - timedelta(days=3)).isoformat()),
-        (p_id, 45.99, 19, (datetime.now() - timedelta(days=2)).isoformat()),
-        (p_id, 22.65, 19, (datetime.now() - timedelta(days=1)).isoformat()),
-    ]
+        # Start with a random base price and move it up/down
+        base_price = random.uniform(10.0, 60.0)
 
-    # 3. Insert them
-    cursor.executemany('''
-        INSERT INTO price_history (product_id, price, stock, timestamp)
-        VALUES (?, ?, ?, ?)
-    ''', fake_data)
+        fake_data = []
+        
+        for i in range (5, 0, -1):
+
+            # Create a slight random for the price
+            historical_price = round(base_price + random.uniform(-5.0, 5.0), 2)
+            timestamp = (datetime.now() - timedelta(days=i)).isoformat()
+
+            fake_data.append((p_id, historical_price, 10, timestamp))
+
+        # 3. Insert the batch for the product
+        cursor.executemany('''
+            INSERT INTO price_history (product_id, price, stock, timestamp)
+            VALUES (?, ?, ?, ?)
+        ''', fake_data)
 
     conn.commit()
     conn.close()
-    print("SUCCESS: 5 days of history injected. Check your dashboard!")
+    print("SUCCESS: Global history injection complete")
 
 if __name__ == "__main__":
     seed_history()
