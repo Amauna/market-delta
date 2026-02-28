@@ -92,9 +92,12 @@
             try {
                 const response = await fetch('http://127.0.0.1:8000/dashboard-stats');
                 const data = await response.json();
+
+                const dropsCount = data.filter(item => item.current_price < 25).length;
                 
                 // Update KPIs
                 document.getElementById('kpi-total').innerText = data.length;
+                document.getElementById('kpi-drops').innerText = dropsCount;
                 document.getElementById('kpi-sync').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
                 const tableBody = document.getElementById('product-table-body');
