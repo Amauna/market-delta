@@ -6,7 +6,7 @@
 A high-performance, full-stack data pipeline engineered to monitor e-commerce price fluctuations and stock levels. Market Delta transforms raw web data into actionable business intelligence via an automated "Collect -> Transform -> Store -> Serve" lifecycle.
 
 ## 📁 Project Structure
-```text
+
 market-delta/
 ├── frontend/             # Enterprise Dashboard (HTML5, Tailwind, Chart.js)
 │   └── index.html
