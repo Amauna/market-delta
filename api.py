@@ -136,6 +136,31 @@ async def bulk_add_product(request: BulkProductRequest):
         "results": results
     }
 
+@app.get("/product-history/{product_id}")
+def get_product_history(product_id: int):
+    """
+    Fetch the full price history for a specific product for graphing.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    query = '''
+            SELECT price, timestamp FROM price_history
+            WHERE product_id = ?
+            ORDER BY timestamp ASC
+            '''
+    cursor.execute(query, (product_id,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    if not rows:
+        raise HTTPException(status_code=404, detail="History not found")
+    return [{"price": r[0], "timestamp": r[1]} for r in rows]
+
+@app.get("/export-csv/{product_id}")
+def export_csv(product_id: int):
+    pass
+
 
 @app.get("/")
 def root():

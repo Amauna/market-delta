@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Market Delta | Dashboard</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
 
     <body class="bg-slate-900 text-white font-sans">
@@ -96,42 +97,51 @@
 
             async function loadDashboard() {
                 try {
-                    // Fetch data from FastAPI
-                    const response = await fetch('http://127.0.0.1:8000/dashboard-stats');
-                    const data = await response.json();
+                        const response = await fetch('http://127.0.0.1:8000/dashboard-stats');
+                        const data = await response.json();
 
-                    const grid = document.getElementById('product-grid');
-                    grid.innerHTML = ''; //Clear the loading state
+                        const grid = document.getElementById('product-grid');
+                        grid.innerHTML = ''; 
 
-                    // Loop through each product and create a card
-                    data.forEach(item => {
-                        const card = `
-                        <div class="bg-slate-800 border border-slate-700 p-6 rounded-xl hover:border-blue-500 transition-all shadow-xl">
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-xl font-bold truncate pr-4">${item.title}</h3>
-                                <span class="bg-blue-900/50 text-blue-400 text-xs font-bold px-2 py-1 rounded">ID: ${item.id}</span>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <span class="text-slate-400 text-sm block mb-1">Current Price</span>
-                                <span class="text-4xl font-black text-white">£${item.current_price}</span>
-                            </div>
-
-                            <div class="flex flex-col gap-2">
-                                <a href="${item.url}" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm underline truncate">View Source</a>
-                                <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-2">
-                                    Last Updated: ${new Date(item.last_updated).toLocaleString()}
+                        data.forEach(item => {
+                            const card = `
+                                <div class="bg-slate-800 border border-slate-700 p-6 rounded-xl hover:border-blue-500 transition-all shadow-xl">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-lg font-bold truncate pr-4">${item.title}</h3>
+                                        <span class="text-blue-400 text-xs font-bold">ID: ${item.id}</span>
+                                    </div>
+                                    <div class="flex justify-between items-end mb-6">
+                                        <div>
+                                            <span class="text-slate-400 text-xs block uppercase tracking-widest">Current Price</span>
+                                            <span class="text-3xl font-black text-white">£${item.current_price}</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-slate-500 text-[10px] block uppercase">Last Updated</span>
+                                            <span class="text-slate-300 text-xs">${new Date(item.last_updated).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                    <div class="h-32 w-full mb-4">
+                                        <canvas id="chart-${item.id}"></canvas>
+                                    </div>
+                                    <div class="flex justify-between items-center border-t border-slate-700 pt-4">
+                                        <a href="${item.url}" target="_blank" class="text-blue-500 hover:text-blue-400 text-xs font-bold uppercase">View Source</a>
+                                        <button class="text-slate-400 hover:text-white text-xs uppercase font-bold">Details</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    `;
-                        grid.innerHTML += card;
-                    });
-                }catch (error) {
-                    console.error('Error loading dashboard:', error);
-                    document.getElementById('product-grid').innerHTML = '<p class="text-red-500"> API Offline. Please start the FastAPI server.</p>';
+                            `;
+                            grid.innerHTML += card;
+                        });
+                        
+                        setTimeout(() => {
+                            data.forEach(product => {
+                                renderChart(product.id);
+                            });
+                        }, 200);
+
+                    } catch (error) {
+                        console.error('Error loading dashboard:', error);
+                    }
                 }
-            }
 
             async function bulkAdd(){
                 const input = document.getElementById('bulk-url-input');
@@ -158,6 +168,49 @@
                     loadDashboard(); //Refresh UI
                 } catch (error) {
                     msg.innerText = "API Error. check console.";
+                }
+            }
+
+            async function renderChart(productId) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/product-history/${productId}`);
+                    const history = await response.json();
+
+                    const canvas = document.getElementById(`chart-${productId}`);
+                    if (!canvas) return;
+                    
+                    const ctx = canvas.getContext('2d');
+                    
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: history.map(h => new Date(h.timestamp).toLocaleDateString()),
+                            datasets: [{
+                                label: 'Price Evolution',
+                                data: history.map(h => h.price),
+                                borderColor: '#3b82f6', 
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 2,
+                                pointRadius: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { display: false },
+                                y: {
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    ticks: { color: '#64748b', font: { size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error("Chart Error:", e);
                 }
             }
 
