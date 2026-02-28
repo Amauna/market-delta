@@ -6,7 +6,7 @@
 A high-performance, full-stack data pipeline engineered to monitor e-commerce price fluctuations and stock levels. Market Delta transforms raw web data into actionable business intelligence via an automated "Collect -> Transform -> Store -> Serve" lifecycle.
 
 ## 📁 Project Structure
-
+```
 market-delta/
 ├── frontend/             # Enterprise Dashboard (HTML5, Tailwind, Chart.js)
 │   └── index.html
@@ -21,7 +21,7 @@ market-delta/
 ├── seed_data.py          # Time-Series Data Generator (For Testing)
 ├── requirements.txt      # Dependency Manifest
 └── README.md             # Architecture Documentation
-
+```
 
 ## 🚀 The Mission
 For emerging e-commerce brands, manual price tracking is a growth bottleneck. Market Delta provides a scalable, automated alternative that tracks historical **"Price Deltas,"** allowing businesses to respond to competitor moves instantly.
