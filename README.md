@@ -1,5 +1,9 @@
-<img width="1869" height="921" alt="image" src="https://github.com/user-attachments/assets/809f3108-847d-4b5b-bc9f-e1ac47ac5f6d" />
+## Version 1.2:
+<img width="1920" height="925" alt="image" src="https://github.com/user-attachments/assets/2599c4d8-cdbf-484f-80c8-a6260e5ddd3c" />
 
+
+## Version 1.1:
+<img width="1869" height="921" alt="image" src="https://github.com/user-attachments/assets/809f3108-847d-4b5b-bc9f-e1ac47ac5f6d" />
 
 # Market Delta v1.1: Enterprise Competitor Intelligence Engine
 
